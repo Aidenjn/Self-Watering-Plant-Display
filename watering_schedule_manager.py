@@ -1,6 +1,55 @@
 #!/usr/bin/python
 import time
 import yaml
+import sys
+
+# Global variables
+configFile = "config.yaml"
+
+# Class: WateringTask
+# Description:
+#   Information necessary to perform a scheduled water
+#   dispense task.
+class WateringTask:
+    def __init__(self, feedNumber, taskNumber, GPIO, timeOfDay, mL, daySkip):
+        self.feedNumber = feedNumber
+        self.taskNumber = taskNumber
+        self.GPIO = GPIO
+        self.timeOfDay = timeOfDay
+        self.mL = mL
+        self.daySkip = daySkip
+
+
+# Function: getTaskObjects
+# Description:
+#   Reads configuration file and generates a task list for
+#   dispensing water from feed tubes.
+def getTaskObjects() -> [WateringTask]:
+    tasks = []
+    with open(configFile) as file:
+        feedData = yaml.safe_load(file)
+    try:
+        for feedNumber in range(0, len(feedData["Feeds"])):
+            if ("Tasks" in feedData["Feeds"][feedNumber]):
+                print("Feed tube ", feedNumber, " has ", len(feedData["Feeds"][feedNumber]["Tasks"]), " tasks assigned to it.")
+                for taskNumber in range(0, len(feedData["Feeds"][feedNumber]["Tasks"])):
+                    tasks.append(WateringTask(
+                        feedNumber,
+                        taskNumber,
+                        feedData["Feeds"][feedNumber]["RaspberryPiGPIO"],
+                        feedData["Feeds"][feedNumber]["Tasks"][taskNumber]["TimeOfDay"],
+                        feedData["Feeds"][feedNumber]["Tasks"][taskNumber]["mL"],
+                        feedData["Feeds"][feedNumber]["Tasks"][taskNumber]["DaySkip"]
+                        ))
+            else:
+                print("Feed tube ", feedNumber, " has no tasks assigned to it.")
+    except:
+        print("Failed to parse config.yaml.")
+        print("Make sure that this file follows the required structure.")
+        errorInfo = sys.exc_info()[0]
+        print("Error:\n", errorInfo)
+    return tasks
+
 
 # Function: water
 # Parameters:
@@ -34,6 +83,10 @@ def water(feed: int, mL: int) -> bool:
 
     # closeFeed(feed)
     return True
+
+
+
+getTaskObjects()
 
 
 
