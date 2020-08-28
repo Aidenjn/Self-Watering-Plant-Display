@@ -50,6 +50,21 @@ def getTaskObjects() -> [WateringTask]:
         print("Error:\n", errorInfo)
     return tasks
 
+# Function: openFeed
+# Parameters:
+#   feed: Identification number of feed pipe that will open.
+# Description:
+#  Opens the valve of a feed allowing water to flow.
+def openFeed(feed: int) -> bool:
+    print("Feed ", feed, " open!")
+
+# Function: closeFeed
+# Parameters:
+#   feed: Identification number of feed pipe that will close.
+# Description:
+#  Closes the valve of a feed stopping water from flowing.
+def openFeed(feed: int) -> bool:
+    print("Feed ", feed, " closed!")
 
 # Function: water
 # Parameters:
@@ -86,7 +101,7 @@ def water(feed: int, mL: int) -> bool:
 
 
 
-getTaskObjects()
+tasks = getTaskObjects()
 
 
 
